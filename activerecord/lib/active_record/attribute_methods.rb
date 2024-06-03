@@ -512,7 +512,7 @@ module ActiveRecord
       def attributes_for_create(attribute_names)
         attribute_names &= self.class.column_names
         attribute_names.delete_if do |name|
-          (pk_attribute?(name) && id.nil?) ||
+          (pk_attribute?(name) && _read_attribute(name).nil?) ||
             column_for_attribute(name).virtual?
         end
       end
@@ -534,7 +534,7 @@ module ActiveRecord
       end
 
       def pk_attribute?(name)
-        name == @primary_key
+        name == @primary_key || (self.class.composite_primary_key? && @primary_key.include?(name))
       end
   end
 end
